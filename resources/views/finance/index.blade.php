@@ -26,7 +26,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a class="btn text-white mb-2 bg-secondary bg-gradient" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <a class="btn text-white mb-2 bg-secondary bg-gradient" data-bs-toggle="modal" data-bs-target="#exampleModalGenerate">
                                     <i class="ri-file-upload-fill"></i>Generate Invoice
 </a>     
 
@@ -171,6 +171,119 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-success" id="savePaymentBtn">Record Payment</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="exampleModalGenerate" tabindex="-1" aria-labelledby="exampleModalGenerate" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Generate Invoice</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <form>
+
+                    <!-- Booking -->
+                    <div class="mb-3">
+                        <label class="form-label">Invoice</label>
+                        <select class="form-control" id="InvoiceGenrate">
+    <option selected disabled>Select Booking Invoice</option>
+
+    @foreach($payments as $b)
+        @if($b->invoice && $b->invoice->invoice_number)
+        <option value="{{ $b->id }}"
+                data-invoice="{{ $b->invoice->invoice_number }}"
+                data-amount="{{ $b->grand_total }}">
+
+            {{ $b->invoice->invoice_number }} -
+            {{ $b->customer->full_name }}
+            <!-- {{ $b->vehicle->make }} {{ $b->vehicle->model }}
+            ({{ $b->vehicle->license_plate }}) -
+            ${{ $b->grand_total }} -->
+
+        </option>
+        @endif
+    @endforeach
+</select>
+
+                    </div>
+
+                    <div id="invoicePreview" class="card p-4" style="display:none;">
+
+    <h2 class="text-center mb-0">INVOICE</h2>
+    <p class="text-center text-muted">RentalPro Car Rentals</p>
+
+    <div class="d-flex justify-content-between mt-3">
+        <div>
+            <strong>Bill To:</strong>
+            <p id="invCustomer"></p>
+        </div>
+
+        <div>
+            <strong>Invoice #:</strong>
+            <p id="invNumber"></p>
+
+            <strong>Date:</strong>
+            <p id="invDate"></p>
+        </div>
+    </div>
+
+    <hr>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Duration</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="invVehicle"></td>
+                <td id="invDuration"></td>
+                <td id="invAmount"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-end">
+        <div class="text-end">
+            <p><strong>Subtotal:</strong> <span id="invSubtotal"></span></p>
+            <h4><strong>Total:</strong> <span id="invTotal"></span></h4>
+        </div>
+    </div>
+
+    <div class="text-center mt-4 text-muted">
+        Thank you for your business!<br>
+        Questions? Contact us at support@rentalpro.com
+    </div>
+
+</div>
+
+
+                    
+
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-success" id="downloadPDF">Download Invoice</a>
             </div>
 
         </div>
@@ -383,4 +496,38 @@ $('#savePaymentBtn').click(function () {
     });
 
 });
+
+
+
+$('#InvoiceGenrate').change(function() {
+    let bookingId = $(this).val();
+
+    $.ajax({
+        url: "/finance/get-invoice/" + bookingId,
+        type: "GET",
+        success: function(res) {
+
+            // Show preview box
+            $("#invoicePreview").show();
+
+            // Fill Data
+            $("#invCustomer").text(res.booking.customer.full_name);
+            $("#invNumber").text(res.invoice_number);
+            $("#invDate").text(new Date().toDateString());
+
+            $("#invVehicle").text(
+                res.booking.vehicle.make + " " + 
+                res.booking.vehicle.model + 
+                " (" + res.booking.vehicle.license_plate + ")"
+            );
+
+            $("#invDuration").text(res.days + " days @ $" + res.rate + "/day");
+            $("#invAmount").text("$" + res.amount.toFixed(2));
+            $("#invSubtotal").text("$" + res.amount.toFixed(2));
+            $("#invTotal").text("$" + res.amount.toFixed(2));
+            $('#downloadPDF').attr('href', '/invoice/pdf/' + bookingId);
+        }
+    });
+});
+
 </script>

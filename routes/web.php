@@ -64,6 +64,9 @@ Route::get('/analy',[AnalyticsController::class,'index'])->name('admin.analytics
 
 
 Route::get('/financial',[FinancialController::class,'index'])->name('admin.financials');
+Route::get('/finance/get-invoice/{id}', [FinancialController::class, 'getInvoiceData']);
+Route::get('/invoice/pdf/{id}', [FinancialController::class, 'downloadPDF'])->name('invoice.pdf');
+
 Route::get('/payment',[PaymentController::class,'index'])->name('admin.payment');
 Route::get('/toll_management',[TollManagement::class,'index'])->name('admin.toll');
 Route::get('/setting',[FleetController::class,'index'])->name('admin.setting');

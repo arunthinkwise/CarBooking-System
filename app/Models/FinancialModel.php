@@ -14,6 +14,7 @@ class FinancialModel extends Model
         'amount',
         'payment_method',
         'transaction_id',
-        'notes'
+        'notes',
+        'invoice_number'
     ];
 }
