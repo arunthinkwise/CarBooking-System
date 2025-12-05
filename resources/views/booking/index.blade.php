@@ -176,7 +176,10 @@
                   <select class="form-select" name="status">
                     <option>Active</option>
                     <option>Pending</option>
+                    <option>Confirmed</option>
+                    <option>Compeleted</option>
                     <option>Cancelled</option>
+                   
                   </select>
                 </div>
 
@@ -550,7 +553,6 @@ bookingsContainer.addEventListener('click', function(e){
  const editBtn = e.target.closest('.edit-booking');
 if(editBtn){
   const id = editBtn.dataset.id;
-
   fetch(`/bookings/${id}`, {
     headers: { 'Accept': 'application/json' }
   })
@@ -582,11 +584,20 @@ if(editBtn){
       b.return_datetime ? b.return_datetime.replace(' ','T') : ''
     );
 
+
+
+
+    
+
     setVal('[name="pickup_location"]', b.pickup_location);
     setVal('[name="return_location"]', b.return_location);
     setVal('[name="security_deposit"]', b.security_deposit);
     setVal('[name="mileage_package"]', b.mileage_package);
     setVal('[name="rental_type"]', b.rental_type);
+    // console.log(b.rental_type)
+    // $("#rentalType").val(b.rental_type).change();
+    
+
 
     // store editing id
     bookingForm.dataset.editingId = b.id;

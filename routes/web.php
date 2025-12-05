@@ -8,11 +8,11 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FinancialController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TollManagement;
-use App\Http\Controllers\DriverController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\DriverManagementController;
 
 
 
@@ -63,7 +63,6 @@ Route::middleware('auth')->group(function(){
     Route::post('/customer/update/{id}', [CustomerController::class, 'update']);
     Route::delete('/customer/delete/{id}', [CustomerController::class, 'destroy']);
     
-    Route::get('/driver_management',[DriverController::class,'index'])->name('admin.driver');
     Route::get('/maintenance',[MaintenanceController::class,'index'])->name('admin.maintenance');
     Route::get('/report',[ReportController::class,'index'])->name('admin.reports');
     Route::get('/user',[UserManagementController::class,'index'])->name('admin.usermanagement');
@@ -81,6 +80,14 @@ Route::middleware('auth')->group(function(){
     Route::post('/payment/store', [FinancialController::class, 'store'])->name('payment.store');
     Route::get('/logout',[AuthController::class,'logout'])->name('logout');
 
+
+
+
+    Route::get('/driver',[DriverManagementController::class,'index'])->name('admin.driver');
+    Route::get('/get-bookings/{customer_id}', [DriverManagementController::class,'getBookings']);
+    Route::post('/incident-store', [DriverManagementController::class,'storeIncident'])->name('incident.store');
+
+    
 
 });
 
